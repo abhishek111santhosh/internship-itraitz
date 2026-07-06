@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lionel Messi - My First Web Page</title>
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div>
+
+        <!-- Headings and standard text -->
+        <h1>Lionel Messi: The Football Legend</h1>
+        <h2>A quick look at basic HTML</h2>
+        
+        <p>Welcome to my first web page! This is a simple project about a famous football player.</p>
+
+        <!-- Formatting and Span -->
+        <p>Lionel Messi is known for his <b>amazing dribbling</b> and his <i>beautiful goals</i>. He is considered by many as a <span style="color: blue;">true legend</span> of the sport.</p>
+
+        <!-- Unordered List -->
+        <h3>Things I am learning in HTML:</h3>
+        <ul>
+            <li>HTML Tags</li>
+            <li>Making lists</li>
+            <li>Building forms</li>
+        </ul>
+
+        <!-- Ordered List -->
+        <h3>Clubs He Has Played For:</h3>
+        <ol>
+            <li>FC Barcelona</li>
+            <li>Paris Saint-Germain</li>
+            <li>Inter Miami</li>
+        </ol>
+
+        <hr>
+
+        <!-- Image with alt text -->
+        <h2>A Picture of Messi</h2>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNIZYfcNJFzqMQxk-C8vEFzL49VLOuxf8vuyrHKbsnIw&s=10" alt="Lionel Messi celebrating a goal" width="300">
+
+        <!-- Hyperlink to external site -->
+        <p>If you want to read more about him, <a href="https://en.wikipedia.org/wiki/Lionel_Messi" target="_blank">visit his Wikipedia page</a>.</p>
+
+        <hr>
+
+        <!-- Table for Data Display -->
+        <h2>Career Statistics</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Club</th>
+                    <th>Goals Scored</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FC Barcelona</td>
+                    <td>672</td>
+                </tr>
+                <tr>
+                    <td>Paris Saint-Germain</td>
+                    <td>32</td>
+                </tr>
+                <tr>
+                    <td> Inter Miami </td>
+                    <td>90</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr>
+
+        <!-- User Input Form -->
+        <h2>Fan Club Registration Form</h2>
+        <form action="#">
+            
+            <!-- Text Input -->
+            <p>Your Name: 
+                <input type="text" name="fan_name">
+            </p>
+
+            <!-- Dropdown / Select -->
+            <p>Favorite Messi Era: 
+                <select name="era">
+                    <option value="barca">Barcelona</option>
+                    <option value="argentina">Argentina National Team</option>
+                    <option value="miami">Inter Miami</option>
+                </select>
+            </p>
+
+            <!-- Radio Buttons -->
+            <p>Is he the greatest of all time (GOAT)?<br>
+                <input type="radio" name="goat" value="yes"> Yes<br>
+                <input type="radio" name="goat" value="no"> No
+            </p>
+
+            <!-- Textarea -->
+            <p>What is your favorite Messi moment?<br>
+                <textarea name="message" rows="4" cols="30"></textarea>
+            </p>
+
+            <!-- File Upload -->
+            <p>Upload your fan art:<br>
+                <input type="file" name="fan_art">
+            </p>
+
+            <!-- Checkbox -->
+            <p>
+                <input type="checkbox" name="newsletter" value="subscribe"> Subscribe to the fan newsletter
+            </p>
+
+            <!-- Submit Button -->
+            <p>
+                <input type="submit" value="Submit Form">
+            </p>
+
+        </form>
+
+    </div>
+
+</body>
+</html>
