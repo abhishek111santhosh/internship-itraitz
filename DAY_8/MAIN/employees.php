@@ -19,7 +19,9 @@ $result = $conn->query($sql);
 </head>
 
 <body class="bg-light py-4">
-  <div class="container" style="max-width: 1100px;">
+  <?php include 'navbar.php'; ?>
+
+  <div class="container" style="max-width: 1000px;">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <a href="dashboard.php" class="btn btn-secondary btn-sm px-3 py-2">← Dashboard</a>
       <h3 class="fw-bold mb-0">Corporate Personnel Matrix Index (HR Exclusive)</h3>

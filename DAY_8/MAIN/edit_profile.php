@@ -72,7 +72,9 @@ if (!$profile) {
 </head>
 
 <body class="bg-light py-4">
-  <div class="container" style="max-width: 900px;">
+  <?php include 'navbar.php'; ?>
+
+  <div class="container" style="max-width: 1000px;">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <a href="<?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'employees.php' : 'dashboard.php'; ?>"
         class="btn btn-secondary btn-sm px-3 py-2">
