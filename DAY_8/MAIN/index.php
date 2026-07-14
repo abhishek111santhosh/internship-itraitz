@@ -71,17 +71,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST" action="index.php">
       <div class="mb-3">
         <label class="form-label small text-muted">Email Address</label>
-        <input type="email" name="email" class="form-control" placeholder="hr@ems.com" required autofocus>
+        <input type="email" name="email" class="form-control" placeholder="enter email" required autofocus>
       </div>
       <div class="mb-4">
         <label class="form-label small text-muted">Password</label>
-        <input type="password" name="password" class="form-control" placeholder="hr123" required>
+        <input type="password" name="password" class="form-control" placeholder="password" required>
       </div>
       <button type="submit" class="btn btn-primary w-100 py-2 fw-medium">Login</button>
-      <div class="mt-3 small text-muted">
-        Use <strong>hr@ems.com</strong> / <strong>hr123</strong> or <strong>kripa@itraitz.com</strong> /
-        <strong>emp123</strong>.
-      </div>
     </form>
   </div>
 </body>

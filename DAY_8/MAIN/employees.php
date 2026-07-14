@@ -2,11 +2,11 @@
 require_once 'auth_check.php';
 require_hr(); // Server-side guard: Blocks Employees automatically
 
-$sql = "SELECT u.id as user_id, u.email, e.full_name, e.department, e.designation 
+$sql = "SELECT u.id as user_id, u.email, u.role, e.full_name, e.department, e.designation 
         FROM users u 
         INNER JOIN employees e ON u.id = e.user_id 
-        WHERE u.role = 'employee' 
-        ORDER BY u.id ASC";
+        WHERE u.role IN ('employee', 'hr') 
+        ORDER BY u.role DESC, u.id ASC";
 $result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
@@ -38,6 +38,7 @@ $result = $conn->query($sql);
               <th class="ps-4 py-3">User ID</th>
               <th>Name</th>
               <th>Email System Address</th>
+              <th>Role</th>
               <th>Department Scope</th>
               <th>Designation Level</th>
               <th class="text-center pe-4">Operational Actions</th>
@@ -55,6 +56,11 @@ $result = $conn->query($sql);
                   </td>
                   <td class="text-muted">
                     <?php echo htmlspecialchars($row['email'], ENT_QUOTES, 'UTF-8'); ?>
+                  </td>
+                  <td>
+                    <span class="badge <?php echo $row['role'] === 'hr' ? 'bg-danger' : 'bg-secondary'; ?> px-3 py-2">
+                      <?php echo strtoupper(htmlspecialchars($row['role'], ENT_QUOTES, 'UTF-8')); ?>
+                    </span>
                   </td>
                   <td class="text-muted">
                     <?php echo htmlspecialchars($row['department'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?>
