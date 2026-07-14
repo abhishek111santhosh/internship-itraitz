@@ -69,74 +69,73 @@ if (!$profile) {
       color: #495057;
     }
   </style>
+
 </head>
 
 <body class="bg-light py-4">
-  <?php include 'navbar.php'; ?>
 
-  <div class="container" style="max-width: 1000px;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <a href="<?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'employees.php' : 'dashboard.php'; ?>"
-        class="btn btn-secondary btn-sm px-3 py-2">
-        ← Back to
-        <?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'Directory' : 'Dashboard'; ?>
-      </a>
-      <h3 class="fw-bold mb-0">Profile Record Configuration</h3>
-      <div></div>
-    </div>
+  <body class="bg-light py-4 pt-5">
+    <?php include 'header.php'; ?>
 
-    <?php if ($error): ?>
-      <div class="alert alert-danger py-2 small"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
-    <?php if ($success): ?>
-      <div class="alert alert-success py-2 small"><?php echo htmlspecialchars($success); ?></div><?php endif; ?>
+    <div class="container" style="max-width: 1000px;">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="<?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'employees.php' : 'dashboard.php'; ?>"
+          class="btn btn-secondary btn-sm px-3 py-2">
+          ← Back to
+          <?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'Directory' : 'Dashboard'; ?>
+        </a>
+        <h3 class="fw-bold mb-0">Profile Record Configuration</h3>
+        <div></div>
+      </div>
 
-    <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
-      <form method="POST"
-        action="edit_profile.php<?php echo ($_SESSION['role'] === 'hr') ? '?id=' . $targetUserId : ''; ?>">
+      <?php if ($error): ?>
+        <div class="alert alert-danger py-2 small"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
+      <?php if ($success): ?>
+        <div class="alert alert-success py-2 small"><?php echo htmlspecialchars($success); ?></div><?php endif; ?>
 
-        <div class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label class="form-label small text-muted">Email Context (Immutable)</label>
-            <input type="text" class="form-control readonly-field"
-              value="<?php echo htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8'); ?>" readonly tabindex="-1">
+      <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
+        <form method="POST"
+          action="edit_profile.php<?php echo ($_SESSION['role'] === 'hr') ? '?id=' . $targetUserId : ''; ?>">
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small text-muted">Email Context (Immutable)</label>
+              <input type="text" class="form-control readonly-field"
+                value="<?php echo htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8'); ?>" readonly tabindex="-1">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small text-muted">System Role Access</label>
+              <input type="text" class="form-control readonly-field text-uppercase"
+                value="<?php echo htmlspecialchars($profile['role'], ENT_QUOTES, 'UTF-8'); ?>" readonly tabindex="-1">
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label small text-muted">System Role Access</label>
-            <input type="text" class="form-control readonly-field text-uppercase"
-              value="<?php echo htmlspecialchars($profile['role'], ENT_QUOTES, 'UTF-8'); ?>" readonly tabindex="-1">
-          </div>
-        </div>
 
-        <div class="row g-3 mb-3">
-          <div class="col-md-6">
-            <label class="form-label small text-muted">Full Name</label>
-            <input type="text" name="full_name" class="form-control"
-              value="<?php echo htmlspecialchars($profile['full_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small text-muted">Full Name</label>
+              <input type="text" name="full_name" class="form-control"
+                value="<?php echo htmlspecialchars($profile['full_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small text-muted">Contact Phone</label>
+              <input type="text" name="phone" class="form-control"
+                value="<?php echo htmlspecialchars($profile['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label small text-muted">Contact Phone</label>
-            <input type="text" name="phone" class="form-control"
-              value="<?php echo htmlspecialchars($profile['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-          </div>
-        </div>
 
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <label class="form-label small text-muted">Department</label>
-            <input type="text" name="department" class="form-control"
-              value="<?php echo htmlspecialchars($profile['department'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label small text-muted">Department</label>
+              <input type="text" name="department" class="form-control"
+                value="<?php echo htmlspecialchars($profile['department'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small text-muted">System Designation</label>
+              <input type="text" name="designation" class="form-control"
+                value="<?php echo htmlspecialchars($profile['designation'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label small text-muted">System Designation</label>
-            <input type="text" name="designation" class="form-control"
-              value="<?php echo htmlspecialchars($profile['designation'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-          </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary px-3 py-2 fw-medium">Save Profile Changes</button>
-      </form>
-    </div>
-  </div>
-</body>
-
-</html>
+          <button type="submit" class="btn btn-primary px-3 py-2 fw-medium">Save Profile Changes</button>
+        </form>
+        <?php include 'footer.php'; ?>

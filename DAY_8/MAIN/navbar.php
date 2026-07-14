@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $userRole = $_SESSION['role'] ?? 'guest';
 $userEmail = $_SESSION['email'] ?? 'User';
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 py-2 mb-4 shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 py-2 shadow-sm sticky-top">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="dashboard.php">🏢 EMS Portal</a>
 

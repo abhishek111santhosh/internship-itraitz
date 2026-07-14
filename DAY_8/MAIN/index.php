@@ -78,7 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="password" name="password" class="form-control" placeholder="password" required>
       </div>
       <button type="submit" class="btn btn-primary w-100 py-2 fw-medium">Login</button>
+
     </form>
+
+    <div class="text-center mt-4 pt-3 border-top">
+      <span class="text-muted small">First time logging in?</span>
+      <a href="register.php" class="text-decoration-none small fw-bold ms-1">Activate Allocated Account</a>
+    </div>
   </div>
 </body>
 

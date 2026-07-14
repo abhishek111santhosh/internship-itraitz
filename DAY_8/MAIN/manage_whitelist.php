@@ -52,9 +52,10 @@ $result = $conn->query("SELECT * FROM allocated_workers ORDER BY id DESC");
 </head>
 
 <body class="bg-light py-4">
-  <?php include 'navbar.php'; ?>
 
-  <div class="container" style="max-width: 1000px;">
+  <body class="bg-light py-4 pt-5">
+    <?php include 'header.php'; ?>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
       <a href="dashboard.php" class="btn btn-secondary btn-sm px-3 py-2">← Back to Dashboard</a>
       <h3 class="fw-bold mb-0">Worker Pre-Allocation Whitelist</h3>
@@ -146,7 +147,4 @@ $result = $conn->query("SELECT * FROM allocated_workers ORDER BY id DESC");
         </table>
       </div>
     </div>
-  </div>
-</body>
-
-</html>
+    <?php include 'footer.php'; ?>
