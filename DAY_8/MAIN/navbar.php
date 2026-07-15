@@ -5,7 +5,25 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $userRole = $_SESSION['role'] ?? 'guest';
 $userEmail = $_SESSION['email'] ?? 'User';
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
+<style>
+  .navbar-dark .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    transition: color 0.2s ease;
+  }
+
+  .navbar-dark .nav-link:hover,
+  .navbar-dark .nav-link:focus {
+    color: #fff;
+  }
+
+  .navbar-dark .nav-link.active {
+    color: #fff;
+    font-weight: 700;
+    border-bottom: 2px solid #818cf8;
+  }
+</style>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 py-2 shadow-sm sticky-top">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="dashboard.php">🏢 EMS Portal</a>
@@ -17,18 +35,20 @@ $userEmail = $_SESSION['email'] ?? 'User';
     <div class="collapse navbar-collapse" id="topNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="dashboard.php">Dashboard</a>
+          <a class="nav-link<?php echo $currentPage === 'dashboard.php' ? ' active' : ''; ?>" href="dashboard.php" <?php echo $currentPage === 'dashboard.php' ? ' aria-current="page"' : ''; ?>>Dashboard</a>
         </li>
 
         <?php if ($userRole === 'hr'): ?>
           <li class="nav-item">
-            <a class="nav-link" href="employees.php">Employee Directory</a>
+            <a class="nav-link<?php echo $currentPage === 'employees.php' ? ' active' : ''; ?>" href="employees.php" <?php echo $currentPage === 'employees.php' ? ' aria-current="page"' : ''; ?>>Employee Directory</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="add_employee.php">+ Onboard Staff</a>
+            <a class="nav-link<?php echo $currentPage === 'add_employee.php' ? ' active' : ''; ?>" href="add_employee.php"
+              <?php echo $currentPage === 'add_employee.php' ? ' aria-current="page"' : ''; ?>>+ Onboard Staff</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="manage_whitelist.php">Whitelist Manager</a>
+            <a class="nav-link<?php echo $currentPage === 'manage_whitelist.php' ? ' active' : ''; ?>"
+              href="manage_whitelist.php" <?php echo $currentPage === 'manage_whitelist.php' ? ' aria-current="page"' : ''; ?>>Whitelist Manager</a>
           </li>
         <?php endif; ?>
       </ul>
