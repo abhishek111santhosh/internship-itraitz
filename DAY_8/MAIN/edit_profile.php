@@ -16,31 +16,49 @@ $success = '';
 
 // 2. Handle Profile Updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $name = trim(filter_input(INPUT_POST, 'full_name', FILTER_SANITIZE_SPECIAL_CHARS));
+  $name  = trim(filter_input(INPUT_POST, 'full_name', FILTER_SANITIZE_SPECIAL_CHARS));
   $phone = trim(filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_SPECIAL_CHARS));
-  $dept = trim(filter_input(INPUT_POST, 'department', FILTER_SANITIZE_SPECIAL_CHARS));
+  $dept  = trim(filter_input(INPUT_POST, 'department', FILTER_SANITIZE_SPECIAL_CHARS));
   $desig = trim(filter_input(INPUT_POST, 'designation', FILTER_SANITIZE_SPECIAL_CHARS));
 
   if (!empty($name)) {
-    $updateStmt = $conn->prepare("UPDATE employees SET full_name = ?, phone = ?, department = ?, designation = ? WHERE user_id = ?");
-    $updateStmt->bind_param("ssssi", $name, $phone, $dept, $desig, $targetUserId);
+    // --- SECURITY GUARD: Separate SQL queries based on user role ---
+    if ($_SESSION['role'] === 'hr') {
+      // HR Admin: Pull salary and leave inputs from the form
+      $salary       = filter_input(INPUT_POST, 'salary', FILTER_VALIDATE_FLOAT) ?? 0.00;
+      $total_leaves = filter_input(INPUT_POST, 'total_leaves', FILTER_VALIDATE_INT) ?? 22;
+      $leavetaken   = filter_input(INPUT_POST, 'leavetaken', FILTER_VALIDATE_INT) ?? 0;
 
-    if ($updateStmt->execute()) {
-      $success = "Profile record updated successfully!";
-      if ($targetUserId === $_SESSION['user_id']) {
-        $_SESSION['full_name'] = $name; // Keep session synced
+      if ($leavetaken > $total_leaves) {
+        $error = "Error: Leaves taken cannot exceed the total allocated leaves ($total_leaves).";
+      } else {
+        $updateStmt = $conn->prepare("UPDATE employees SET full_name = ?, phone = ?, department = ?, designation = ?, salary = ?, total_leaves = ?, leavetaken = ? WHERE user_id = ?");
+        $updateStmt->bind_param("ssssdiii", $name, $phone, $dept, $desig, $salary, $total_leaves, $leavetaken, $targetUserId);
       }
     } else {
-      $error = "Failed to update record: " . $conn->error;
+      // Standard Employee: Completely IGNORE salary and leave inputs!
+      $updateStmt = $conn->prepare("UPDATE employees SET full_name = ?, phone = ?, department = ?, designation = ? WHERE user_id = ?");
+      $updateStmt->bind_param("ssssi", $name, $phone, $dept, $desig, $targetUserId);
     }
-    $updateStmt->close();
+
+    if (empty($error) && isset($updateStmt)) {
+      if ($updateStmt->execute()) {
+        $success = "Profile record updated successfully!";
+        if ($targetUserId === $_SESSION['user_id']) {
+          $_SESSION['full_name'] = $name; // Keep session synced
+        }
+      } else {
+        $error = "Failed to update record: " . $conn->error;
+      }
+      $updateStmt->close();
+    }
   } else {
     $error = "Full Name cannot be left blank.";
   }
 }
 
 // 3. Fetch Data for Render
-$stmt = $conn->prepare("SELECT u.email, u.role, e.full_name, e.phone, e.department, e.designation 
+$stmt = $conn->prepare("SELECT u.email, u.role, e.full_name, e.phone, e.department, e.designation, e.salary, e.total_leaves, e.leavetaken 
                         FROM users u 
                         INNER JOIN employees e ON u.id = e.user_id 
                         WHERE u.id = ?");
@@ -57,7 +75,6 @@ if (!$profile) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>Profile Record Configuration</title>
@@ -67,75 +84,89 @@ if (!$profile) {
       background-color: #e9ecef;
       border-color: #dee2e6;
       color: #495057;
+      cursor: not-allowed;
     }
   </style>
-
 </head>
+<body class="bg-light py-4 pt-5">
+  <?php include 'header.php'; ?>
 
-<body class="bg-light py-4">
+  <div class="container" style="max-width: 1000px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <a href="<?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'employees.php' : 'dashboard.php'; ?>" class="btn btn-secondary btn-sm px-3 py-2">
+        ← Back to <?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'Directory' : 'Dashboard'; ?>
+      </a>
+      <h3 class="fw-bold mb-0">Profile Record Configuration</h3>
+      <div></div>
+    </div>
 
-  <body class="bg-light py-4 pt-5">
-    <?php include 'header.php'; ?>
+    <?php if ($error): ?><div class="alert alert-danger py-2 small"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
+    <?php if ($success): ?><div class="alert alert-success py-2 small"><?php echo htmlspecialchars($success); ?></div><?php endif; ?>
 
-    <div class="container" style="max-width: 1000px;">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="<?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'employees.php' : 'dashboard.php'; ?>"
-          class="btn btn-secondary btn-sm px-3 py-2">
-          ← Back to
-          <?php echo ($_SESSION['role'] === 'hr' && $targetUserId !== $_SESSION['user_id']) ? 'Directory' : 'Dashboard'; ?>
-        </a>
-        <h3 class="fw-bold mb-0">Profile Record Configuration</h3>
-        <div></div>
-      </div>
+    <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
+      <form method="POST" action="edit_profile.php<?php echo ($_SESSION['role'] === 'hr') ? '?id=' . $targetUserId : ''; ?>">
 
-      <?php if ($error): ?>
-        <div class="alert alert-danger py-2 small"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
-      <?php if ($success): ?>
-        <div class="alert alert-success py-2 small"><?php echo htmlspecialchars($success); ?></div><?php endif; ?>
-
-      <div class="card border-0 shadow-sm p-4 rounded-3 bg-white">
-        <form method="POST"
-          action="edit_profile.php<?php echo ($_SESSION['role'] === 'hr') ? '?id=' . $targetUserId : ''; ?>">
-
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label small text-muted">Email Context (Immutable)</label>
-              <input type="text" class="form-control readonly-field"
-                value="<?php echo htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8'); ?>" readonly tabindex="-1">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label small text-muted">System Role Access</label>
-              <input type="text" class="form-control readonly-field text-uppercase"
-                value="<?php echo htmlspecialchars($profile['role'], ENT_QUOTES, 'UTF-8'); ?>" readonly tabindex="-1">
-            </div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label small text-muted">Email Context (Immutable)</label>
+            <input type="text" class="form-control readonly-field" value="<?php echo htmlspecialchars($profile['email'], ENT_QUOTES, 'UTF-8'); ?>" readonly tabindex="-1">
           </div>
-
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="form-label small text-muted">Full Name</label>
-              <input type="text" name="full_name" class="form-control"
-                value="<?php echo htmlspecialchars($profile['full_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label small text-muted">Contact Phone</label>
-              <input type="text" name="phone" class="form-control"
-                value="<?php echo htmlspecialchars($profile['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-            </div>
+          <div class="col-md-6">
+            <label class="form-label small text-muted">System Role Access</label>
+            <input type="text" class="form-control readonly-field text-uppercase" value="<?php echo htmlspecialchars($profile['role'], ENT_QUOTES, 'UTF-8'); ?>" readonly tabindex="-1">
           </div>
+        </div>
 
-          <div class="row g-3 mb-4">
-            <div class="col-md-6">
-              <label class="form-label small text-muted">Department</label>
-              <input type="text" name="department" class="form-control"
-                value="<?php echo htmlspecialchars($profile['department'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label small text-muted">System Designation</label>
-              <input type="text" name="designation" class="form-control"
-                value="<?php echo htmlspecialchars($profile['designation'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-            </div>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label small text-muted">Full Name</label>
+            <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($profile['full_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
           </div>
+          <div class="col-md-6">
+            <label class="form-label small text-muted">Contact Phone</label>
+            <input type="text" name="phone" class="form-control" value="<?php echo htmlspecialchars($profile['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+          </div>
+        </div>
 
-          <button type="submit" class="btn btn-primary px-3 py-2 fw-medium">Save Profile Changes</button>
-        </form>
-        <?php include 'footer.php'; ?>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label small text-muted">Department</label>
+            <input type="text" name="department" class="form-control" value="<?php echo htmlspecialchars($profile['department'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small text-muted">System Designation</label>
+            <input type="text" name="designation" class="form-control" value="<?php echo htmlspecialchars($profile['designation'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+          </div>
+        </div>
+
+        <hr class="text-muted mb-4">
+        <h6 class="fw-bold text-dark mb-3">Compensation & Leave Metrics</h6>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <label class="form-label small text-muted">Salary ($)</label>
+            <input type="number" step="0.01" name="salary" class="form-control <?php echo ($_SESSION['role'] !== 'hr') ? 'readonly-field' : ''; ?>" 
+              value="<?php echo htmlspecialchars($profile['salary'] ?? '0.00', ENT_QUOTES, 'UTF-8'); ?>" 
+              <?php echo ($_SESSION['role'] !== 'hr') ? 'readonly tabindex="-1"' : ''; ?>>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small text-muted">Total Leaves</label>
+            <input type="number" name="total_leaves" class="form-control <?php echo ($_SESSION['role'] !== 'hr') ? 'readonly-field' : ''; ?>" 
+              value="<?php echo htmlspecialchars($profile['total_leaves'] ?? '22', ENT_QUOTES, 'UTF-8'); ?>" 
+              <?php echo ($_SESSION['role'] !== 'hr') ? 'readonly tabindex="-1"' : ''; ?>>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small text-muted">
+              Leaves Taken <span class="text-success fw-bold">(Remaining: <?php echo (($profile['total_leaves'] ?? 22) - ($profile['leavetaken'] ?? 0)); ?>)</span>
+            </label>
+            <input type="number" name="leavetaken" class="form-control <?php echo ($_SESSION['role'] !== 'hr') ? 'readonly-field' : ''; ?>" 
+              value="<?php echo htmlspecialchars($profile['leavetaken'] ?? '0', ENT_QUOTES, 'UTF-8'); ?>" 
+              <?php echo ($_SESSION['role'] !== 'hr') ? 'readonly tabindex="-1' : 'min="0" max="' . ($profile['total_leaves'] ?? 22) . '"'; ?>>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary px-4 py-2 fw-medium">Save Profile Changes</button>
+      </form>
+    </div>
+  </div>
+  <?php include 'footer.php'; ?>
